@@ -5,14 +5,22 @@ import {
   Save,
   ShieldCheck,
   Building,
-  GraduationCap
+  GraduationCap,
+  Trash2,
+  AlertTriangle,
+  RotateCcw,
+  Smartphone,
+  Download,
+  Sparkles
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import ConfirmDialog from '../components/common/ConfirmDialog';
 import {
   getStudentProfile,
   saveStudentProfile,
   getSettings,
-  saveSettings
+  saveSettings,
+  clearAllData
 } from '../utils/storage';
 
 export default function SettingsPage() {
@@ -20,6 +28,7 @@ export default function SettingsPage() {
 
   const [profile, setProfile] = useState(getStudentProfile());
   const [settings, setSettings] = useState(getSettings());
+  const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
 
   const loadData = () => {
     setProfile(getStudentProfile());
@@ -37,6 +46,15 @@ export default function SettingsPage() {
     toast.success('Profile and settings saved successfully!');
   };
 
+  const handleClearAll = () => {
+    clearAllData();
+    loadData();
+    toast.success('All student data & subjects cleared successfully!');
+    setTimeout(() => {
+      window.location.reload();
+    }, 500);
+  };
+
   return (
     <div className="space-y-6 max-w-4xl">
       
@@ -49,6 +67,33 @@ export default function SettingsPage() {
         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
           Customize student profile details and minimum attendance criteria.
         </p>
+      </div>
+
+      {/* Mobile App Download Banner */}
+      <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-tr from-indigo-950 via-slate-900 to-slate-950 border border-indigo-500/40 text-white shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-500 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-emerald-500/30 shrink-0">
+            <Smartphone className="w-6 h-6" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
+              <span>Install AttendX on Your Phone</span>
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            </h3>
+            <p className="text-xs text-indigo-200/90 mt-0.5">
+              Get 1-tap home screen access with offline routine & instant attendance marking.
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new CustomEvent('open-pwa-install'))}
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-500/30 transition-all hover:scale-102 active:scale-95 shrink-0"
+        >
+          <Download className="w-4 h-4" />
+          <span>Install / Download App</span>
+        </button>
       </div>
 
       {/* Persistence Notice */}
@@ -80,6 +125,7 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
+                placeholder="e.g. Rahul Sharma"
                 value={profile.name}
                 onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"
@@ -92,6 +138,7 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
+                placeholder="e.g. CS-2024-001"
                 value={profile.rollNumber}
                 onChange={(e) => setProfile({ ...profile, rollNumber: e.target.value })}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"
@@ -104,6 +151,7 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
+                placeholder="e.g. My College"
                 value={profile.college}
                 onChange={(e) => setProfile({ ...profile, college: e.target.value })}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"
@@ -116,6 +164,7 @@ export default function SettingsPage() {
               </label>
               <input
                 type="text"
+                placeholder="e.g. Semester 4 (CSE)"
                 value={profile.semester}
                 onChange={(e) => setProfile({ ...profile, semester: e.target.value })}
                 className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none"
@@ -154,6 +203,37 @@ export default function SettingsPage() {
           </div>
         </form>
       </div>
+
+      {/* Danger Zone: Clean Slate */}
+      <div className="p-6 rounded-3xl bg-rose-50/50 dark:bg-rose-950/20 border border-rose-200/80 dark:border-rose-900/40 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+          <Trash2 className="w-5 h-5" />
+          <h2 className="text-base font-bold">
+            Data Reset / Clean Slate
+          </h2>
+        </div>
+        <p className="text-xs text-rose-900 dark:text-rose-200/80 leading-relaxed">
+          Need a completely blank start? Clicking this will wipe all subjects, routine slots, logs, and reset profile details immediately.
+        </p>
+        <button
+          type="button"
+          onClick={() => setIsClearDialogOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md shadow-rose-600/20 transition-all hover:scale-102"
+        >
+          <RotateCcw className="w-4 h-4" />
+          Wipe & Clean All Data
+        </button>
+      </div>
+
+      <ConfirmDialog
+        isOpen={isClearDialogOpen}
+        onClose={() => setIsClearDialogOpen(false)}
+        onConfirm={handleClearAll}
+        title="Wipe & Reset All Data?"
+        message="This will completely clear all your added subjects, attendance logs, and routine. This action cannot be undone."
+        confirmText="Yes, Wipe Everything"
+        type="danger"
+      />
 
     </div>
   );

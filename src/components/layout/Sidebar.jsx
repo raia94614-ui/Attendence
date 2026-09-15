@@ -3,12 +3,13 @@ import {
   Calendar,
   BookOpen,
   CalendarDays,
-  CheckSquare,
   Settings,
   Sparkles,
   X,
   Camera,
-  ShieldCheck
+  ShieldCheck,
+  Smartphone,
+  Download
 } from 'lucide-react';
 import { getStudentProfile } from '../../utils/storage';
 
@@ -26,7 +27,6 @@ export default function Sidebar({
     { id: 'timetable', label: 'Timetable & Routine', icon: Calendar, highlight: true },
     { id: 'subjects', label: 'My Subjects', icon: BookOpen },
     { id: 'calendar', label: 'Attendance Calendar', icon: CalendarDays },
-    { id: 'holidays', label: 'Holidays & Deadlines', icon: CheckSquare },
     { id: 'settings', label: 'Settings & Profile', icon: Settings }
   ];
 
@@ -97,21 +97,50 @@ export default function Sidebar({
             </button>
           );
         })}
+
+        {/* Download App Shortcut in Nav */}
+        <button
+          onClick={() => {
+            window.dispatchEvent(new CustomEvent('open-pwa-install'));
+            if (isOpenMobile) onCloseMobile();
+          }}
+          title={isCollapsed ? 'Download App' : undefined}
+          className={`w-full flex items-center gap-3 px-3.5 py-2.5 mt-2 rounded-xl font-semibold text-sm transition-all duration-200 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-950/40 border border-emerald-500/20 group ${
+            isCollapsed ? 'justify-center px-2' : ''
+          }`}
+        >
+          <Smartphone className="w-5 h-5 shrink-0 text-emerald-400 group-hover:scale-110 transition-transform" />
+          {!isCollapsed && (
+            <div className="flex items-center justify-between flex-1 min-w-0">
+              <span className="truncate font-bold">Download App</span>
+              <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300">
+                PWA
+              </span>
+            </div>
+          )}
+        </button>
       </div>
 
       {/* Bottom Profile Summary Card */}
       {!isCollapsed && (
-        <div className="p-3 m-3 rounded-2xl bg-slate-800/60 border border-slate-700/60">
+        <div
+          onClick={() => {
+            onNavigate('settings');
+            if (isOpenMobile) onCloseMobile();
+          }}
+          className="p-3 m-3 rounded-2xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/60 cursor-pointer transition-colors"
+          title="Click to edit profile"
+        >
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-md ring-2 ring-indigo-500/30 shrink-0">
-              {profile.name ? profile.name.charAt(0).toUpperCase() : 'S'}
+              {profile.name ? profile.name.charAt(0).toUpperCase() : 'U'}
             </div>
             <div className="truncate min-w-0">
               <p className="text-xs font-bold text-white truncate">
-                {profile.name || 'Student'}
+                {profile.name || 'My Profile'}
               </p>
               <p className="text-[10px] text-indigo-300 font-mono truncate">
-                {profile.rollNumber || 'Student'}
+                {profile.rollNumber || 'Tap to edit profile'}
               </p>
             </div>
           </div>

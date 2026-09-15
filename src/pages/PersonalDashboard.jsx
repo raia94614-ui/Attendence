@@ -126,7 +126,11 @@ export default function PersonalDashboard({ onNavigate }) {
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-white pt-1">
-              Hey, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-indigo-300">{profile.name || 'Student'}</span>! 👋
+              {profile.name ? (
+                <>Hey, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-indigo-300">{profile.name}</span>! 👋</>
+              ) : (
+                <>Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-indigo-100 to-indigo-300">AttendX</span>! 👋</>
+              )}
             </h1>
 
             <p className="text-xs sm:text-sm text-indigo-200/90 leading-relaxed">

@@ -9,14 +9,14 @@ import {
 } from '../data/demoData';
 
 const KEYS = {
-  PROFILE: 'attendx_student_profile',
-  SUBJECTS: 'attendx_student_subjects',
-  TIMETABLE_IMAGE: 'attendx_timetable_image',
-  WEEKLY_ROUTINE: 'attendx_weekly_routine',
-  DAILY_LOGS: 'attendx_daily_attendance_logs',
-  HOLIDAYS: 'attendx_holidays',
-  ASSIGNMENTS: 'attendx_assignments',
-  SETTINGS: 'attendx_student_settings',
+  PROFILE: 'attendx_v2_profile',
+  SUBJECTS: 'attendx_v2_subjects',
+  TIMETABLE_IMAGE: 'attendx_v2_timetable_image',
+  WEEKLY_ROUTINE: 'attendx_v2_weekly_routine',
+  DAILY_LOGS: 'attendx_v2_daily_logs',
+  HOLIDAYS: 'attendx_v2_holidays',
+  ASSIGNMENTS: 'attendx_v2_assignments',
+  SETTINGS: 'attendx_v2_settings',
   THEME: 'attendx_theme'
 };
 
@@ -45,6 +45,24 @@ function safeSet(key, value) {
 
 // Initializer
 export function initializeStorage() {
+  // Purge any legacy demo keys
+  const legacyKeys = [
+    'attendx_student_profile',
+    'attendx_student_subjects',
+    'attendx_timetable_image',
+    'attendx_weekly_routine',
+    'attendx_daily_attendance_logs',
+    'attendx_holidays',
+    'attendx_assignments',
+    'attendx_student_settings',
+    'attendx_data_cleaned_v1'
+  ];
+  legacyKeys.forEach(k => {
+    try {
+      localStorage.removeItem(k);
+    } catch (e) {}
+  });
+
   if (!localStorage.getItem(KEYS.PROFILE)) {
     safeSet(KEYS.PROFILE, INITIAL_STUDENT_PROFILE);
   }
@@ -55,7 +73,7 @@ export function initializeStorage() {
     safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
   }
   if (!localStorage.getItem(KEYS.DAILY_LOGS)) {
-    safeSet(KEYS.DAILY_LOGS, generateSeedDailyLogs());
+    safeSet(KEYS.DAILY_LOGS, []);
   }
   if (!localStorage.getItem(KEYS.HOLIDAYS)) {
     safeSet(KEYS.HOLIDAYS, INITIAL_HOLIDAYS);
@@ -64,7 +82,7 @@ export function initializeStorage() {
     safeSet(KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
   }
   if (!localStorage.getItem(KEYS.SETTINGS)) {
-    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "Apex Institute of Technology" });
+    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "" });
   }
 }
 
@@ -80,7 +98,7 @@ export function saveStudentProfile(profile) {
 // ================= SUBJECTS =================
 export function getStudentSubjects() {
   const data = safeGet(KEYS.SUBJECTS, null);
-  if (!data || data.length === 0) {
+  if (data === null) {
     safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
     return INITIAL_STUDENT_SUBJECTS;
   }
