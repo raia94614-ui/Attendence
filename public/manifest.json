@@ -1,0 +1,18 @@
+{
+  "name": "AttendX — Smart Student Attendance & Routine",
+  "short_name": "AttendX",
+  "description": "Smart student attendance tracker, weekly routine, timetable photo viewer, and safe bunk calculator.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512' fill='%234f46e5'><rect width='512' height='512' rx='128' fill='%234f46e5'/><path d='M256 120 L380 392 L300 392 L256 290 L212 392 L132 392 Z' fill='white'/></svg>",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
