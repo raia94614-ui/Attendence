@@ -63,7 +63,7 @@ export function RoutineAlertProvider({ children }) {
   };
 
   // Trigger alert popup, ringtone & native notification
-  const triggerAlert = useCallback((slot, minutesBefore = 5, isTest = false) => {
+  const triggerAlert = useCallback((slot, minutesBefore = 10, isTest = false) => {
     const subjects = getStudentSubjects();
     const profile = getStudentProfile();
     const sub = subjects.find(s => s.id === slot.subjectId) || {
@@ -82,7 +82,7 @@ export function RoutineAlertProvider({ children }) {
 
     setActiveAlert(alertData);
 
-    // 1. Play phone ringtone
+    // 1. Play phone ringtone & vibrate
     if (reminderSettings.ringtoneEnabled) {
       playClassRingtone(reminderSettings.soundType || 'marimba');
     }
@@ -181,7 +181,7 @@ export function RoutineAlertProvider({ children }) {
       room: 'Room 304 (Lab 2)'
     };
 
-    triggerAlert(testSlot, reminderSettings.leadTimeMinutes || 5, true);
+    triggerAlert(testSlot, reminderSettings.leadTimeMinutes || 10, true);
   }, [reminderSettings, triggerAlert]);
 
   // Heartbeat Routine Monitor & Next Class Calculator
@@ -203,7 +203,7 @@ export function RoutineAlertProvider({ children }) {
       if (!reminderSettings.enabled) return;
 
       const currentMin = getCurrentTimeMinutes();
-      const leadTime = parseInt(reminderSettings.leadTimeMinutes, 10) || 5;
+      const leadTime = parseInt(reminderSettings.leadTimeMinutes !== undefined ? reminderSettings.leadTimeMinutes : 10, 10);
 
       todaySlots.forEach(slot => {
         const startMin = parseTimeToMinutes(slot.time);
@@ -222,9 +222,9 @@ export function RoutineAlertProvider({ children }) {
       });
     };
 
-    // Run immediately and then every 10 seconds
+    // Run immediately and then every 5 seconds
     checkSchedule();
-    const interval = setInterval(checkSchedule, 10000);
+    const interval = setInterval(checkSchedule, 5000);
 
     return () => {
       clearInterval(interval);

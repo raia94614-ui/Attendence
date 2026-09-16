@@ -44,7 +44,7 @@ function safeSet(key, value) {
   }
 }
 
-const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v7';
+const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v8';
 
 export function initializeStorage() {
   // Purge any legacy keys
@@ -76,10 +76,20 @@ export function initializeStorage() {
     safeSet(KEYS.HOLIDAYS, INITIAL_HOLIDAYS);
     safeSet(KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
     safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "" });
+    safeSet(KEYS.REMINDERS, DEFAULT_REMINDER_SETTINGS);
     try {
       localStorage.removeItem(KEYS.TIMETABLE_IMAGE);
     } catch (e) {}
     localStorage.setItem(CLEAN_STORAGE_VERSION_KEY, 'true');
+  }
+
+  // Auto deduplicate subjects if any exist
+  const existingSubs = safeGet(KEYS.SUBJECTS, null);
+  if (existingSubs && Array.isArray(existingSubs) && existingSubs.length > 0) {
+    const deduped = deduplicateSubjects(existingSubs);
+    if (deduped.length !== existingSubs.length) {
+      safeSet(KEYS.SUBJECTS, deduped);
+    }
   }
 
   // Only initialize defaults if not already present
@@ -139,6 +149,63 @@ export function saveStudentProfile(profile) {
   return safeSet(KEYS.PROFILE, profile);
 }
 
+export function normalizeSubjectKey(codeOrName = '') {
+  if (!codeOrName) return '';
+  const clean = codeOrName.toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+  if (clean === 'aoc' || clean === 'aocii' || clean === 'aociig1' || clean === 'aoc2' || clean === 'aocg1' || clean === 'aoc11') return 'aoc-ii-g1';
+  if (clean === 'adifa' || clean === 'ad1fa' || clean === 'adifag1') return 'adi-fa';
+  if (clean === 'adi' || clean === 'ad1' || clean === 'adig1') return 'adi';
+  if (clean === 'aaipd' || clean === 'aa1pd' || clean === 'aipd') return 'aaipd';
+  if (clean === 'bee' || clean === '8ee' || clean === 'bfe') return 'bee';
+  if (clean === 'bpc' || clean === 'bpcg3' || clean === 'bpc3' || clean === '8pc') return 'bpc-g3';
+  if (clean === 'nalr' || clean === 'nalri' || clean === 'nalr1' || clean === 'na1r') return 'nalr-i';
+  if (clean === 'pa' || clean === 'paa') return 'pa';
+  return clean;
+}
+
+export function deduplicateSubjects(list = []) {
+  if (!Array.isArray(list)) return [];
+  const seenKeys = new Map();
+
+  list.forEach(sub => {
+    if (!sub || typeof sub !== 'object') return;
+    const code = (sub.code || '').trim();
+    const name = (sub.name || '').trim();
+    if (!code && !name) return;
+
+    const key = normalizeSubjectKey(code) || normalizeSubjectKey(name) || (sub.id || '').toLowerCase();
+
+    if (seenKeys.has(key)) {
+      const existing = seenKeys.get(key);
+      seenKeys.set(key, {
+        id: existing.id || sub.id,
+        name: existing.name && existing.name.length >= name.length ? existing.name : (name || existing.name),
+        code: existing.code && existing.code.length >= code.length ? existing.code : (code || existing.code),
+        teacher: existing.teacher || sub.teacher || '',
+        room: existing.room || sub.room || '',
+        color: existing.color || sub.color || '#6366f1',
+        present: Math.max(parseInt(existing.present) || 0, parseInt(sub.present) || 0),
+        total: Math.max(parseInt(existing.total) || 0, parseInt(sub.total) || 0),
+        target: existing.target || sub.target || 75
+      });
+    } else {
+      seenKeys.set(key, {
+        id: sub.id || `sub-${key}`,
+        name: name || code || 'Subject',
+        code: code || name || 'SUB',
+        teacher: sub.teacher || '',
+        room: sub.room || '',
+        color: sub.color || '#6366f1',
+        present: parseInt(sub.present) || 0,
+        total: parseInt(sub.total) || 0,
+        target: parseInt(sub.target) || 75
+      });
+    }
+  });
+
+  return Array.from(seenKeys.values());
+}
+
 // ================= SUBJECTS =================
 export function getStudentSubjects() {
   const data = safeGet(KEYS.SUBJECTS, null);
@@ -146,24 +213,40 @@ export function getStudentSubjects() {
     safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
     return INITIAL_STUDENT_SUBJECTS;
   }
-  return data;
+  return deduplicateSubjects(data);
 }
 
 export function saveStudentSubjects(subjects) {
-  return safeSet(KEYS.SUBJECTS, subjects);
+  const deduped = deduplicateSubjects(subjects);
+  return safeSet(KEYS.SUBJECTS, deduped);
 }
 
 export function addStudentSubject(subject) {
   const list = getStudentSubjects();
+  const subCode = (subject.code || '').trim();
+  const subName = (subject.name || '').trim();
+  const subKey = normalizeSubjectKey(subCode) || normalizeSubjectKey(subName);
+
+  const existingIdx = list.findIndex(s => {
+    const k = normalizeSubjectKey(s.code) || normalizeSubjectKey(s.name) || s.id.toLowerCase();
+    return k === subKey || s.id === subject.id;
+  });
+
   const newSubject = {
     ...subject,
-    id: subject.id || `sub-${Date.now()}`,
+    id: existingIdx !== -1 ? list[existingIdx].id : (subject.id || `sub-${Date.now()}`),
     present: parseInt(subject.present) || 0,
     total: parseInt(subject.total) || 0,
     target: parseInt(subject.target) || 75,
     color: subject.color || '#6366f1'
   };
-  list.push(newSubject);
+
+  if (existingIdx !== -1) {
+    list[existingIdx] = { ...list[existingIdx], ...newSubject };
+  } else {
+    list.push(newSubject);
+  }
+
   saveStudentSubjects(list);
   return newSubject;
 }
@@ -413,7 +496,7 @@ export function deleteAssignment(id) {
 // ================= SETTINGS, REMINDERS & THEME =================
 export const DEFAULT_REMINDER_SETTINGS = {
   enabled: true,
-  leadTimeMinutes: 5, // 5 min before class
+  leadTimeMinutes: 10, // 10 min before class alarm
   ringtoneEnabled: true,
   soundType: 'marimba', // 'marimba' | 'chime' | 'buzzer'
   speechEnabled: true,

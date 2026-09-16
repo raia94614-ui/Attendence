@@ -58,7 +58,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   {
     id: "sub-aoc-2",
     name: "AoC-II-G1 (Architecture on Cloud)",
-    code: "AoC-II",
+    code: "AoC-II-G1",
     teacher: "Mr. Ajay",
     room: "RJ310R",
     color: "#f59e0b",
@@ -134,7 +134,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
       id: "slot-mo-4",
       subjectId: "sub-aoc-2",
       subjectName: "AoC-II-G1 (Architecture on Cloud)",
-      subjectCode: "AoC-II",
+      subjectCode: "AoC-II-G1",
       teacher: "Mr. Ajay",
       time: "02:30 PM - 04:10 PM",
       room: "RJ310R"
@@ -163,7 +163,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
       id: "slot-tu-3",
       subjectId: "sub-aoc-2",
       subjectName: "AoC-II-G1 (Architecture on Cloud)",
-      subjectCode: "AoC-II",
+      subjectCode: "AoC-II-G1",
       teacher: "Mr. Ajay",
       time: "02:30 PM - 04:10 PM",
       room: "RJ310R"

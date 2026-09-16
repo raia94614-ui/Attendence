@@ -94,14 +94,27 @@ function playBuzzerPattern() {
 }
 
 /**
- * Start loop of selected ringtone sound
+ * Start loop of selected ringtone sound and phone vibration
  */
 export function playClassRingtone(soundType = 'marimba') {
   stopClassRingtone();
   isRinging = true;
 
+  // Trigger mobile phone vibration if supported
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate([600, 200, 600, 200, 1000]);
+    } catch (e) {}
+  }
+
   const playSequence = () => {
     if (!isRinging) return;
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate([600, 200, 600, 200, 800]);
+      } catch (e) {}
+    }
+
     if (soundType === 'chime') {
       playChimePattern();
     } else if (soundType === 'buzzer') {
@@ -118,10 +131,15 @@ export function playClassRingtone(soundType = 'marimba') {
 }
 
 /**
- * Stop active ringtone audio immediately
+ * Stop active ringtone audio and vibration immediately
  */
 export function stopClassRingtone() {
   isRinging = false;
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    try {
+      navigator.vibrate(0);
+    } catch (e) {}
+  }
   if (loopInterval) {
     clearInterval(loopInterval);
     loopInterval = null;

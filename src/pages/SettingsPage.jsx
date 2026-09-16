@@ -262,10 +262,10 @@ export default function SettingsPage() {
           <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
             <div className="space-y-0.5">
               <label className="text-xs font-bold text-slate-900 dark:text-white cursor-pointer" htmlFor="enable-call-alarms">
-                Enable 5-Min Class Call Alarms
+                Enable 10-Min Class Call Alarms
               </label>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Automatically ring incoming call modal when class is approaching
+                Automatically ring incoming call modal & vibrate phone 10 minutes before class starts
               </p>
             </div>
             <input
@@ -285,8 +285,8 @@ export default function SettingsPage() {
             </label>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               {[
-                { label: '5 Minutes Before (Default)', value: 5 },
-                { label: '10 Minutes Before', value: 10 },
+                { label: '10 Minutes Before (Default)', value: 10 },
+                { label: '5 Minutes Before', value: 5 },
                 { label: '15 Minutes Before', value: 15 },
                 { label: 'At Class Start (0 min)', value: 0 }
               ].map(opt => (

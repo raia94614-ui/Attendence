@@ -545,7 +545,7 @@ export function parseTimetableScheduleFromOCR(ocrResult = {}) {
       Tuesday: [
         buildSlot('Tuesday', 0, { code: 'BEE', name: 'BEE (Basic Electrical Engineering)', teacher: 'Mr Sandeep', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
         buildSlot('Tuesday', 1, { code: 'BPC-G3', name: 'BPC-G3 (Business Process & Comm)', teacher: 'Mr Manish', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
-        buildSlot('Tuesday', 2, { code: 'AoC-II', name: 'AoC-II-G1 (Architecture on Cloud)', teacher: 'Mr. Ajay', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
+        buildSlot('Tuesday', 2, { code: 'AoC-II-G1', name: 'AoC-II-G1 (Architecture on Cloud)', teacher: 'Mr. Ajay', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
       ],
       Wednesday: [
         buildSlot('Wednesday', 0, { code: 'NALR-I', name: 'NALR-I (Numerical Analysis & Linear Reasoning)', teacher: 'Mr Satish', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),

@@ -244,7 +244,7 @@ export default function WeeklyRoutineBuilder({ onSwitchToPhotoTab }) {
           <div>
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-sm font-bold text-white">
-                5-Min Class Call Alarm & Reminder
+                10-Min Class Call Alarm & Phone Reminder
               </h3>
               <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
                 reminderSettings.enabled
