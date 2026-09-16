@@ -2,10 +2,10 @@
 // Preset with authentic Chitkara University BE-CSE-5A schedule
 
 export const INITIAL_STUDENT_PROFILE = {
-  name: "Student",
-  college: "Chitkara University, Himachal Pradesh",
-  department: "School of Engineering & Technology (BE-CSE)",
-  semester: "5th Semester (5A)",
+  name: "",
+  college: "",
+  department: "",
+  semester: "",
   rollNumber: "",
   minTarget: 75
 };
@@ -260,8 +260,16 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
   Sunday: []
 };
 
-export const INITIAL_STUDENT_SUBJECTS = CHITKARA_BE_CSE_5A_SUBJECTS;
-export const INITIAL_WEEKLY_ROUTINE = CHITKARA_BE_CSE_5A_ROUTINE;
+export const INITIAL_STUDENT_SUBJECTS = [];
+export const INITIAL_WEEKLY_ROUTINE = {
+  Monday: [],
+  Tuesday: [],
+  Wednesday: [],
+  Thursday: [],
+  Friday: [],
+  Saturday: [],
+  Sunday: []
+};
 
 export const INITIAL_HOLIDAYS = [];
 export const INITIAL_ASSIGNMENTS = [];

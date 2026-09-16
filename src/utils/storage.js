@@ -44,8 +44,7 @@ function safeSet(key, value) {
   }
 }
 
-const ROUTINE_VERSION_KEY = 'attendx_v4_routine_version';
-const CURRENT_ROUTINE_VERSION = '2026.09.16.v4';
+const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v7';
 
 export function initializeStorage() {
   // Purge any legacy keys
@@ -58,7 +57,8 @@ export function initializeStorage() {
     'attendx_holidays',
     'attendx_assignments',
     'attendx_student_settings',
-    'attendx_data_cleaned_v1'
+    'attendx_data_cleaned_v1',
+    'attendx_v4_routine_version'
   ];
   legacyKeys.forEach(k => {
     try {
@@ -66,18 +66,20 @@ export function initializeStorage() {
     } catch (e) {}
   });
 
-  // Check if routine needs auto-repair / migration to 100% accurate BE-CSE-5A schedule
-  const storedVersion = localStorage.getItem(ROUTINE_VERSION_KEY);
-  const currentRoutine = safeGet(KEYS.WEEKLY_ROUTINE, null);
-  const mondayNeedsRepair = !currentRoutine || 
-    !currentRoutine.Monday || 
-    currentRoutine.Monday.length < 4 || 
-    currentRoutine.Monday.some(s => s.subjectCode === 'PA');
-
-  if (storedVersion !== CURRENT_ROUTINE_VERSION || mondayNeedsRepair) {
+  // Check if storage needs reset to fresh clean state
+  const isCleaned = localStorage.getItem(CLEAN_STORAGE_VERSION_KEY);
+  if (isCleaned !== 'true') {
+    safeSet(KEYS.PROFILE, INITIAL_STUDENT_PROFILE);
+    safeSet(KEYS.SUBJECTS, []);
     safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
-    safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
-    localStorage.setItem(ROUTINE_VERSION_KEY, CURRENT_ROUTINE_VERSION);
+    safeSet(KEYS.DAILY_LOGS, []);
+    safeSet(KEYS.HOLIDAYS, INITIAL_HOLIDAYS);
+    safeSet(KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
+    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "" });
+    try {
+      localStorage.removeItem(KEYS.TIMETABLE_IMAGE);
+    } catch (e) {}
+    localStorage.setItem(CLEAN_STORAGE_VERSION_KEY, 'true');
   }
 
   // Only initialize defaults if not already present
@@ -100,7 +102,7 @@ export function initializeStorage() {
     safeSet(KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
   }
   if (!localStorage.getItem(KEYS.SETTINGS)) {
-    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "Chitkara University, Himachal Pradesh" });
+    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "" });
   }
   if (!localStorage.getItem(KEYS.REMINDERS)) {
     safeSet(KEYS.REMINDERS, DEFAULT_REMINDER_SETTINGS);
@@ -108,16 +110,24 @@ export function initializeStorage() {
 }
 
 export function applyChitkaraWeeklySchedule() {
-  safeSet(KEYS.PROFILE, INITIAL_STUDENT_PROFILE);
-  safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
-  safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
-  localStorage.setItem(ROUTINE_VERSION_KEY, CURRENT_ROUTINE_VERSION);
+  const demoProfile = {
+    name: "Student",
+    college: "Chitkara University, Himachal Pradesh",
+    department: "School of Engineering & Technology (BE-CSE)",
+    semester: "5th Semester (5A)",
+    rollNumber: "",
+    minTarget: 75
+  };
+  safeSet(KEYS.PROFILE, demoProfile);
+  safeSet(KEYS.SUBJECTS, CHITKARA_BE_CSE_5A_SUBJECTS);
+  safeSet(KEYS.WEEKLY_ROUTINE, CHITKARA_BE_CSE_5A_ROUTINE);
+  safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "Chitkara University, Himachal Pradesh" });
 
   if (typeof window !== 'undefined') {
     window.dispatchEvent(new CustomEvent('attendx-routine-updated'));
     window.dispatchEvent(new CustomEvent('attendx-attendance-updated'));
   }
-  return { routine: INITIAL_WEEKLY_ROUTINE, subjects: INITIAL_STUDENT_SUBJECTS };
+  return { routine: CHITKARA_BE_CSE_5A_ROUTINE, subjects: CHITKARA_BE_CSE_5A_SUBJECTS };
 }
 
 // ================= STUDENT PROFILE =================
@@ -231,10 +241,8 @@ export function removeTimetableImage() {
 // ================= WEEKLY ROUTINE =================
 export function getWeeklyRoutine() {
   const data = safeGet(KEYS.WEEKLY_ROUTINE, null);
-  if (!data || !data.Monday || data.Monday.length < 4 || data.Monday.some(s => s.subjectCode === 'PA')) {
+  if (!data) {
     safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
-    safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
-    localStorage.setItem(ROUTINE_VERSION_KEY, CURRENT_ROUTINE_VERSION);
     return INITIAL_WEEKLY_ROUTINE;
   }
   return data;
@@ -489,11 +497,13 @@ export function resetToDefaultData() {
 }
 
 export function clearAllData() {
+  safeSet(KEYS.PROFILE, INITIAL_STUDENT_PROFILE);
   safeSet(KEYS.SUBJECTS, []);
   safeSet(KEYS.WEEKLY_ROUTINE, { Monday: [], Tuesday: [], Wednesday: [], Thursday: [], Friday: [], Saturday: [], Sunday: [] });
   safeSet(KEYS.DAILY_LOGS, []);
   safeSet(KEYS.HOLIDAYS, []);
   safeSet(KEYS.ASSIGNMENTS, []);
+  safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "" });
   localStorage.removeItem(KEYS.TIMETABLE_IMAGE);
   return true;
 }

@@ -21,6 +21,7 @@ import {
   getWeeklyRoutine,
   saveWeeklyRoutine,
   getStudentSubjects,
+  getStudentProfile,
   addRoutineSlot,
   deleteRoutineSlot,
   getTimetableImage,
@@ -345,14 +346,18 @@ export default function WeeklyRoutineBuilder({ onSwitchToPhotoTab }) {
             <div>
               <h3 className="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-indigo-500" />
-                <span>BE-CSE-5A Weekly Lecture Schedule (Chitkara University)</span>
+                <span>
+                  {getStudentProfile().college
+                    ? `${getStudentProfile().college} Weekly Schedule`
+                    : 'Weekly Lecture Routine Matrix'}
+                </span>
               </h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Full weekly matrix with exact faculty, classroom codes, and period timings
+                Full weekly matrix with faculty, classroom codes, and period timings
               </p>
             </div>
             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 self-start sm:self-auto">
-              16 Classes Scheduled
+              {Object.values(routine).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0)} Classes Scheduled
             </span>
           </div>
 
