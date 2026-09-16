@@ -44,7 +44,7 @@ function safeSet(key, value) {
   }
 }
 
-const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v8';
+const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v9';
 
 export function initializeStorage() {
   // Purge any legacy keys
@@ -83,10 +83,11 @@ export function initializeStorage() {
     localStorage.setItem(CLEAN_STORAGE_VERSION_KEY, 'true');
   }
 
-  // Auto deduplicate subjects if any exist
+  // Auto deduplicate subjects if any exist and filter out unwanted legacy PA
   const existingSubs = safeGet(KEYS.SUBJECTS, null);
   if (existingSubs && Array.isArray(existingSubs) && existingSubs.length > 0) {
-    const deduped = deduplicateSubjects(existingSubs);
+    const cleanSubs = existingSubs.filter(s => s && s.code !== 'PA' && s.id !== 'sub-pa' && (!s.name || !s.name.includes('Predictive Analytics')));
+    const deduped = deduplicateSubjects(cleanSubs);
     if (deduped.length !== existingSubs.length) {
       safeSet(KEYS.SUBJECTS, deduped);
     }
@@ -159,7 +160,6 @@ export function normalizeSubjectKey(codeOrName = '') {
   if (clean === 'bee' || clean === '8ee' || clean === 'bfe') return 'bee';
   if (clean === 'bpc' || clean === 'bpcg3' || clean === 'bpc3' || clean === '8pc') return 'bpc-g3';
   if (clean === 'nalr' || clean === 'nalri' || clean === 'nalr1' || clean === 'na1r') return 'nalr-i';
-  if (clean === 'pa' || clean === 'paa') return 'pa';
   return clean;
 }
 
@@ -172,6 +172,7 @@ export function deduplicateSubjects(list = []) {
     const code = (sub.code || '').trim();
     const name = (sub.name || '').trim();
     if (!code && !name) return;
+    if (code === 'PA' || sub.id === 'sub-pa' || (name && name.includes('Predictive Analytics'))) return;
 
     const key = normalizeSubjectKey(code) || normalizeSubjectKey(name) || (sub.id || '').toLowerCase();
 
@@ -213,7 +214,8 @@ export function getStudentSubjects() {
     safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
     return INITIAL_STUDENT_SUBJECTS;
   }
-  return deduplicateSubjects(data);
+  const clean = data.filter(s => s && s.code !== 'PA' && s.id !== 'sub-pa' && (!s.name || !s.name.includes('Predictive Analytics')));
+  return deduplicateSubjects(clean);
 }
 
 export function saveStudentSubjects(subjects) {

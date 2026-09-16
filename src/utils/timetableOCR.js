@@ -24,14 +24,6 @@ export const STANDARD_PERIOD_TIMINGS = [
 
 export const KNOWN_SUBJECTS_CATALOG = [
   {
-    code: 'PA',
-    name: 'PA (Predictive Analytics & AI)',
-    teacher: 'Mr Ritesh',
-    room: 'RJ310R',
-    color: '#8b5cf6',
-    aliases: ['pa', 'p.a', 'predictive analytics', 'predictive', 'parallel architectures', 'parallel arch', 'pa-g1', 'pa-g2']
-  },
-  {
     code: 'AAIPD',
     name: 'AAIPD (Applied AI & Product Design)',
     teacher: 'Dr Ashutosh',
@@ -445,7 +437,6 @@ export function matchCatalogSubject(token = '') {
   }
 
   // Common OCR character error corrections
-  if (clean === 'pa' || clean === 'p.a' || clean === 'paa') return KNOWN_SUBJECTS_CATALOG.find(s => s.code === 'PA');
   if (clean === 'apd' || clean === 'aaipd' || clean === 'aa1pd' || clean === 'aipd' || clean === 'aaip' || clean === 'noo') return KNOWN_SUBJECTS_CATALOG.find(s => s.code === 'AAIPD');
   if (clean === 'hee' || clean === '8ee' || clean === 'bfe' || clean === 'bee') return KNOWN_SUBJECTS_CATALOG.find(s => s.code === 'BEE');
   if (clean.includes('ad1') || clean.includes('adi') || clean === 'aoa' || clean === 'sor') {

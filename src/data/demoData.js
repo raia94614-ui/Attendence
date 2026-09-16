@@ -12,17 +12,6 @@ export const INITIAL_STUDENT_PROFILE = {
 
 export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   {
-    id: "sub-pa",
-    name: "PA (Predictive Analytics & AI)",
-    code: "PA",
-    teacher: "Mr Ritesh",
-    room: "RJ310R",
-    color: "#8b5cf6",
-    present: 0,
-    total: 0,
-    target: 75
-  },
-  {
     id: "sub-aaipd",
     name: "AAIPD (Applied AI & Product Design)",
     code: "AAIPD",
