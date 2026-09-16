@@ -44,7 +44,21 @@ function safeSet(key, value) {
   }
 }
 
-const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v9';
+const CLEAN_STORAGE_VERSION_KEY = 'attendx_clean_mode_v10';
+
+export function cleanSubjectName(name = '', code = '') {
+  let str = (name || '').trim();
+  const c = (code || '').trim();
+  if (!str && !c) return 'Subject';
+  if (!str) return c;
+
+  // Remove bracket expansion like "ADI-FA (App Dev & Innovation)" -> "ADI-FA"
+  const bracketIdx = str.indexOf(' (');
+  if (bracketIdx !== -1) {
+    str = str.substring(0, bracketIdx).trim();
+  }
+  return str || c;
+}
 
 export function initializeStorage() {
   // Purge any legacy keys
@@ -83,13 +97,32 @@ export function initializeStorage() {
     localStorage.setItem(CLEAN_STORAGE_VERSION_KEY, 'true');
   }
 
-  // Auto deduplicate subjects if any exist and filter out unwanted legacy PA
+  // Auto deduplicate & clean subjects if any exist and filter out unwanted legacy PA
   const existingSubs = safeGet(KEYS.SUBJECTS, null);
   if (existingSubs && Array.isArray(existingSubs) && existingSubs.length > 0) {
     const cleanSubs = existingSubs.filter(s => s && s.code !== 'PA' && s.id !== 'sub-pa' && (!s.name || !s.name.includes('Predictive Analytics')));
     const deduped = deduplicateSubjects(cleanSubs);
-    if (deduped.length !== existingSubs.length) {
-      safeSet(KEYS.SUBJECTS, deduped);
+    safeSet(KEYS.SUBJECTS, deduped);
+  }
+
+  // Also clean any existing routine slots
+  const existingRoutine = safeGet(KEYS.WEEKLY_ROUTINE, null);
+  if (existingRoutine && typeof existingRoutine === 'object') {
+    const cleanedRoutine = {};
+    let changed = false;
+    Object.keys(existingRoutine).forEach(day => {
+      if (Array.isArray(existingRoutine[day])) {
+        cleanedRoutine[day] = existingRoutine[day].map(slot => {
+          const cleanName = cleanSubjectName(slot.subjectName, slot.subjectCode);
+          if (cleanName !== slot.subjectName) changed = true;
+          return { ...slot, subjectName: cleanName };
+        });
+      } else {
+        cleanedRoutine[day] = [];
+      }
+    });
+    if (changed) {
+      safeSet(KEYS.WEEKLY_ROUTINE, cleanedRoutine);
     }
   }
 
@@ -169,10 +202,13 @@ export function deduplicateSubjects(list = []) {
 
   list.forEach(sub => {
     if (!sub || typeof sub !== 'object') return;
-    const code = (sub.code || '').trim();
-    const name = (sub.name || '').trim();
-    if (!code && !name) return;
-    if (code === 'PA' || sub.id === 'sub-pa' || (name && name.includes('Predictive Analytics'))) return;
+    const rawCode = (sub.code || '').trim();
+    const rawName = (sub.name || '').trim();
+    if (!rawCode && !rawName) return;
+    if (rawCode === 'PA' || sub.id === 'sub-pa' || (rawName && rawName.includes('Predictive Analytics'))) return;
+
+    const code = cleanSubjectName(rawCode, rawCode);
+    const name = cleanSubjectName(rawName, code);
 
     const key = normalizeSubjectKey(code) || normalizeSubjectKey(name) || (sub.id || '').toLowerCase();
 
@@ -180,8 +216,8 @@ export function deduplicateSubjects(list = []) {
       const existing = seenKeys.get(key);
       seenKeys.set(key, {
         id: existing.id || sub.id,
-        name: existing.name && existing.name.length >= name.length ? existing.name : (name || existing.name),
-        code: existing.code && existing.code.length >= code.length ? existing.code : (code || existing.code),
+        name: name.length <= existing.name.length ? name : existing.name,
+        code: code || existing.code,
         teacher: existing.teacher || sub.teacher || '',
         room: existing.room || sub.room || '',
         color: existing.color || sub.color || '#6366f1',
@@ -330,7 +366,18 @@ export function getWeeklyRoutine() {
     safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
     return INITIAL_WEEKLY_ROUTINE;
   }
-  return data;
+  const cleanRoutine = {};
+  Object.keys(data).forEach(day => {
+    if (Array.isArray(data[day])) {
+      cleanRoutine[day] = data[day].map(slot => ({
+        ...slot,
+        subjectName: cleanSubjectName(slot.subjectName, slot.subjectCode)
+      }));
+    } else {
+      cleanRoutine[day] = [];
+    }
+  });
+  return cleanRoutine;
 }
 
 export function saveWeeklyRoutine(routine) {

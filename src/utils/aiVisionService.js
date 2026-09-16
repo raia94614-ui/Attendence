@@ -61,7 +61,7 @@ Strict Accuracy Rules:
 4. If a field like teacher or room is not visible or unclear, leave it as an empty string ("") and set "needsReview": true.
 5. For each lecture period, extract:
    - subjectCode: Exact short code/acronym from the cell (e.g., ADI-FA, ADI, BEE, NALR-I, AAIPD, AoC-II-G1, BPC-G3)
-   - subjectName: Full subject name
+   - subjectName: Exact subject name / code as written in the timetable (e.g. ADI-FA, ADI, BEE; do NOT append guessed expanded text)
    - teacher: Faculty name (e.g. Ms Ritu, Mr Ritesh, Dr Ashutosh, Mr. Ajay, Mr Sandeep, Mr Manish, Mr Satish)
    - room: Classroom / Lab number (e.g. RJ310R, CVR309R)
    - time: Period start and end time (e.g. "09:30 AM - 11:10 AM", "11:10 AM - 12:50 PM", "01:40 PM - 02:30 PM", "02:30 PM - 04:10 PM")
@@ -72,7 +72,7 @@ Return ONLY a valid, raw JSON object (no markdown, no backticks) with this struc
 {
   "title": "Course/Section title if visible",
   "subjects": [
-    { "code": "ADI-FA", "name": "ADI-FA (App Dev & Innovation)", "teacher": "Ms Ritu", "room": "RJ310R", "color": "#6366f1" }
+    { "code": "ADI-FA", "name": "ADI-FA", "teacher": "Ms Ritu", "room": "RJ310R", "color": "#6366f1" }
   ],
   "routine": {
     "Monday": [],

@@ -13,7 +13,7 @@ export const INITIAL_STUDENT_PROFILE = {
 export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   {
     id: "sub-aaipd",
-    name: "AAIPD (Applied AI & Product Design)",
+    name: "AAIPD",
     code: "AAIPD",
     teacher: "Dr Ashutosh",
     room: "RJ310R",
@@ -24,7 +24,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   },
   {
     id: "sub-adi-fa",
-    name: "ADI-FA (App Dev & Innovation)",
+    name: "ADI-FA",
     code: "ADI-FA",
     teacher: "Ms Ritu",
     room: "RJ310R",
@@ -35,7 +35,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   },
   {
     id: "sub-adi",
-    name: "ADI (App Dev & Innovation)",
+    name: "ADI",
     code: "ADI",
     teacher: "Mr Ritesh",
     room: "RJ310R",
@@ -46,7 +46,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   },
   {
     id: "sub-aoc-2",
-    name: "AoC-II-G1 (Architecture on Cloud)",
+    name: "AoC-II-G1",
     code: "AoC-II-G1",
     teacher: "Mr. Ajay",
     room: "RJ310R",
@@ -57,7 +57,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   },
   {
     id: "sub-bee",
-    name: "BEE (Basic Electrical Engineering)",
+    name: "BEE",
     code: "BEE",
     teacher: "Mr Sandeep",
     room: "RJ310R",
@@ -68,7 +68,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   },
   {
     id: "sub-bpc-3",
-    name: "BPC-G3 (Business Process & Comm)",
+    name: "BPC-G3",
     code: "BPC-G3",
     teacher: "Mr Manish",
     room: "RJ310R / CVR309R",
@@ -79,7 +79,7 @@ export const CHITKARA_BE_CSE_5A_SUBJECTS = [
   },
   {
     id: "sub-nalr-1",
-    name: "NALR-I (Numerical Analysis & Linear Reasoning)",
+    name: "NALR-I",
     code: "NALR-I",
     teacher: "Mr Satish",
     room: "RJ310R",
@@ -95,7 +95,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-mo-1",
       subjectId: "sub-adi-fa",
-      subjectName: "ADI-FA (App Dev & Innovation)",
+      subjectName: "ADI-FA",
       subjectCode: "ADI-FA",
       teacher: "Ms Ritu",
       time: "09:30 AM - 11:10 AM",
@@ -104,7 +104,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-mo-2",
       subjectId: "sub-adi",
-      subjectName: "ADI (App Dev & Innovation)",
+      subjectName: "ADI",
       subjectCode: "ADI",
       teacher: "Mr Ritesh",
       time: "11:10 AM - 12:50 PM",
@@ -113,7 +113,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-mo-3",
       subjectId: "sub-aaipd",
-      subjectName: "AAIPD (Applied AI & Product Design)",
+      subjectName: "AAIPD",
       subjectCode: "AAIPD",
       teacher: "Dr Ashutosh",
       time: "01:40 PM - 02:30 PM",
@@ -122,7 +122,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-mo-4",
       subjectId: "sub-aoc-2",
-      subjectName: "AoC-II-G1 (Architecture on Cloud)",
+      subjectName: "AoC-II-G1",
       subjectCode: "AoC-II-G1",
       teacher: "Mr. Ajay",
       time: "02:30 PM - 04:10 PM",
@@ -133,7 +133,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-tu-1",
       subjectId: "sub-bee",
-      subjectName: "BEE (Basic Electrical Engineering)",
+      subjectName: "BEE",
       subjectCode: "BEE",
       teacher: "Mr Sandeep",
       time: "09:30 AM - 11:10 AM",
@@ -142,7 +142,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-tu-2",
       subjectId: "sub-bpc-3",
-      subjectName: "BPC-G3 (Business Process & Comm)",
+      subjectName: "BPC-G3",
       subjectCode: "BPC-G3",
       teacher: "Mr Manish",
       time: "11:10 AM - 12:50 PM",
@@ -151,7 +151,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-tu-3",
       subjectId: "sub-aoc-2",
-      subjectName: "AoC-II-G1 (Architecture on Cloud)",
+      subjectName: "AoC-II-G1",
       subjectCode: "AoC-II-G1",
       teacher: "Mr. Ajay",
       time: "02:30 PM - 04:10 PM",
@@ -162,7 +162,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-we-1",
       subjectId: "sub-nalr-1",
-      subjectName: "NALR-I (Numerical Analysis & Linear Reasoning)",
+      subjectName: "NALR-I",
       subjectCode: "NALR-I",
       teacher: "Mr Satish",
       time: "09:30 AM - 11:10 AM",
@@ -171,7 +171,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-we-2",
       subjectId: "sub-bee",
-      subjectName: "BEE (Basic Electrical Engineering)",
+      subjectName: "BEE",
       subjectCode: "BEE",
       teacher: "Mr Sandeep",
       time: "11:10 AM - 12:50 PM",
@@ -180,7 +180,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-we-3",
       subjectId: "sub-adi",
-      subjectName: "ADI (App Dev & Innovation)",
+      subjectName: "ADI",
       subjectCode: "ADI",
       teacher: "Mr Ritesh",
       time: "02:30 PM - 04:10 PM",
@@ -191,7 +191,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-th-1",
       subjectId: "sub-aaipd",
-      subjectName: "AAIPD (Applied AI & Product Design)",
+      subjectName: "AAIPD",
       subjectCode: "AAIPD",
       teacher: "Dr Ashutosh",
       time: "09:30 AM - 11:10 AM",
@@ -200,7 +200,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-th-2",
       subjectId: "sub-adi",
-      subjectName: "ADI (App Dev & Innovation)",
+      subjectName: "ADI",
       subjectCode: "ADI",
       teacher: "Mr Ritesh",
       time: "11:10 AM - 12:50 PM",
@@ -209,7 +209,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-th-3",
       subjectId: "sub-bee",
-      subjectName: "BEE (Basic Electrical Engineering)",
+      subjectName: "BEE",
       subjectCode: "BEE",
       teacher: "Mr Sandeep",
       time: "02:30 PM - 04:10 PM",
@@ -220,7 +220,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-fr-1",
       subjectId: "sub-bpc-3",
-      subjectName: "BPC-G3 (Business Process & Comm)",
+      subjectName: "BPC-G3",
       subjectCode: "BPC-G3",
       teacher: "Mr Manish",
       time: "09:30 AM - 11:10 AM",
@@ -229,7 +229,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-fr-2",
       subjectId: "sub-adi",
-      subjectName: "ADI (App Dev & Innovation)",
+      subjectName: "ADI",
       subjectCode: "ADI",
       teacher: "Mr Ritesh",
       time: "11:10 AM - 12:50 PM",
@@ -238,7 +238,7 @@ export const CHITKARA_BE_CSE_5A_ROUTINE = {
     {
       id: "slot-fr-3",
       subjectId: "sub-nalr-1",
-      subjectName: "NALR-I (Numerical Analysis & Linear Reasoning)",
+      subjectName: "NALR-I",
       subjectCode: "NALR-I",
       teacher: "Mr Satish",
       time: "02:30 PM - 04:10 PM",

@@ -25,7 +25,7 @@ export const STANDARD_PERIOD_TIMINGS = [
 export const KNOWN_SUBJECTS_CATALOG = [
   {
     code: 'AAIPD',
-    name: 'AAIPD (Applied AI & Product Design)',
+    name: 'AAIPD',
     teacher: 'Dr Ashutosh',
     room: 'RJ310R',
     color: '#0ea5e9',
@@ -33,7 +33,7 @@ export const KNOWN_SUBJECTS_CATALOG = [
   },
   {
     code: 'ADI-FA',
-    name: 'ADI-FA (App Dev & Innovation)',
+    name: 'ADI-FA',
     teacher: 'Ms Ritu',
     room: 'RJ310R',
     color: '#6366f1',
@@ -41,7 +41,7 @@ export const KNOWN_SUBJECTS_CATALOG = [
   },
   {
     code: 'ADI',
-    name: 'ADI (App Dev & Innovation)',
+    name: 'ADI',
     teacher: 'Mr Ritesh',
     room: 'RJ310R',
     color: '#8b5cf6',
@@ -49,7 +49,7 @@ export const KNOWN_SUBJECTS_CATALOG = [
   },
   {
     code: 'AoC-II-G1',
-    name: 'AoC-II-G1 (Architecture on Cloud)',
+    name: 'AoC-II-G1',
     teacher: 'Mr. Ajay',
     room: 'RJ310R',
     color: '#f59e0b',
@@ -57,7 +57,7 @@ export const KNOWN_SUBJECTS_CATALOG = [
   },
   {
     code: 'BEE',
-    name: 'BEE (Basic Electrical Engineering)',
+    name: 'BEE',
     teacher: 'Mr Sandeep',
     room: 'RJ310R',
     color: '#10b981',
@@ -65,7 +65,7 @@ export const KNOWN_SUBJECTS_CATALOG = [
   },
   {
     code: 'BPC-G3',
-    name: 'BPC-G3 (Business Process & Comm)',
+    name: 'BPC-G3',
     teacher: 'Mr Manish',
     room: 'RJ310R / CVR309R',
     color: '#ec4899',
@@ -73,7 +73,7 @@ export const KNOWN_SUBJECTS_CATALOG = [
   },
   {
     code: 'NALR-I',
-    name: 'NALR-I (Numerical Analysis & Linear Reasoning)',
+    name: 'NALR-I',
     teacher: 'Mr Satish',
     room: 'RJ310R',
     color: '#f97316',
@@ -525,33 +525,33 @@ export function parseTimetableScheduleFromOCR(ocrResult = {}) {
     });
 
     const mondaySlots = [
-      buildSlot('Monday', 0, { code: 'ADI-FA', name: 'ADI-FA (App Dev & Innovation)', teacher: 'Ms Ritu', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
-      buildSlot('Monday', 1, { code: 'ADI', name: 'ADI (App Dev & Innovation)', teacher: 'Mr Ritesh', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
-      buildSlot('Monday', 2, { code: 'AAIPD', name: 'AAIPD (Applied AI & Product Design)', teacher: 'Dr Ashutosh', room: 'RJ310R', time: '01:40 PM - 02:30 PM' }),
-      buildSlot('Monday', 3, { code: 'AoC-II-G1', name: 'AoC-II-G1 (Architecture on Cloud)', teacher: 'Mr. Ajay', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
+      buildSlot('Monday', 0, { code: 'ADI-FA', name: 'ADI-FA', teacher: 'Ms Ritu', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
+      buildSlot('Monday', 1, { code: 'ADI', name: 'ADI', teacher: 'Mr Ritesh', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
+      buildSlot('Monday', 2, { code: 'AAIPD', name: 'AAIPD', teacher: 'Dr Ashutosh', room: 'RJ310R', time: '01:40 PM - 02:30 PM' }),
+      buildSlot('Monday', 3, { code: 'AoC-II-G1', name: 'AoC-II-G1', teacher: 'Mr. Ajay', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
     ];
 
     const fullRoutine = {
       Monday: mondaySlots,
       Tuesday: [
-        buildSlot('Tuesday', 0, { code: 'BEE', name: 'BEE (Basic Electrical Engineering)', teacher: 'Mr Sandeep', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
-        buildSlot('Tuesday', 1, { code: 'BPC-G3', name: 'BPC-G3 (Business Process & Comm)', teacher: 'Mr Manish', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
-        buildSlot('Tuesday', 2, { code: 'AoC-II-G1', name: 'AoC-II-G1 (Architecture on Cloud)', teacher: 'Mr. Ajay', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
+        buildSlot('Tuesday', 0, { code: 'BEE', name: 'BEE', teacher: 'Mr Sandeep', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
+        buildSlot('Tuesday', 1, { code: 'BPC-G3', name: 'BPC-G3', teacher: 'Mr Manish', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
+        buildSlot('Tuesday', 2, { code: 'AoC-II-G1', name: 'AoC-II-G1', teacher: 'Mr. Ajay', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
       ],
       Wednesday: [
-        buildSlot('Wednesday', 0, { code: 'NALR-I', name: 'NALR-I (Numerical Analysis & Linear Reasoning)', teacher: 'Mr Satish', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
-        buildSlot('Wednesday', 1, { code: 'BEE', name: 'BEE (Basic Electrical Engineering)', teacher: 'Mr Sandeep', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
-        buildSlot('Wednesday', 2, { code: 'ADI', name: 'ADI (App Dev & Innovation)', teacher: 'Mr Ritesh', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
+        buildSlot('Wednesday', 0, { code: 'NALR-I', name: 'NALR-I', teacher: 'Mr Satish', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
+        buildSlot('Wednesday', 1, { code: 'BEE', name: 'BEE', teacher: 'Mr Sandeep', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
+        buildSlot('Wednesday', 2, { code: 'ADI', name: 'ADI', teacher: 'Mr Ritesh', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
       ],
       Thursday: [
-        buildSlot('Thursday', 0, { code: 'AAIPD', name: 'AAIPD (Applied AI & Product Design)', teacher: 'Dr Ashutosh', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
-        buildSlot('Thursday', 1, { code: 'ADI', name: 'ADI (App Dev & Innovation)', teacher: 'Mr Ritesh', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
-        buildSlot('Thursday', 2, { code: 'BEE', name: 'BEE (Basic Electrical Engineering)', teacher: 'Mr Sandeep', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
+        buildSlot('Thursday', 0, { code: 'AAIPD', name: 'AAIPD', teacher: 'Dr Ashutosh', room: 'RJ310R', time: '09:30 AM - 11:10 AM' }),
+        buildSlot('Thursday', 1, { code: 'ADI', name: 'ADI', teacher: 'Mr Ritesh', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
+        buildSlot('Thursday', 2, { code: 'BEE', name: 'BEE', teacher: 'Mr Sandeep', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
       ],
       Friday: [
-        buildSlot('Friday', 0, { code: 'BPC-G3', name: 'BPC-G3 (Business Process & Comm)', teacher: 'Mr Manish', room: 'CVR309R', time: '09:30 AM - 11:10 AM' }),
-        buildSlot('Friday', 1, { code: 'ADI', name: 'ADI (App Dev & Innovation)', teacher: 'Mr Ritesh', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
-        buildSlot('Friday', 2, { code: 'NALR-I', name: 'NALR-I (Numerical Analysis & Linear Reasoning)', teacher: 'Mr Satish', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
+        buildSlot('Friday', 0, { code: 'BPC-G3', name: 'BPC-G3', teacher: 'Mr Manish', room: 'CVR309R', time: '09:30 AM - 11:10 AM' }),
+        buildSlot('Friday', 1, { code: 'ADI', name: 'ADI', teacher: 'Mr Ritesh', room: 'RJ310R', time: '11:10 AM - 12:50 PM' }),
+        buildSlot('Friday', 2, { code: 'NALR-I', name: 'NALR-I', teacher: 'Mr Satish', room: 'RJ310R', time: '02:30 PM - 04:10 PM' })
       ],
       Saturday: [],
       Sunday: []
