@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
+import MobileBottomNav from './MobileBottomNav';
 import QuickSearchModal from './QuickSearchModal';
 import PWAInstallPrompt from '../common/PWAInstallPrompt';
 
@@ -11,7 +12,7 @@ export default function Layout({ currentPage, onNavigate, children }) {
 
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
-      {/* Sidebar Navigation */}
+      {/* Sidebar Navigation (Desktop & Mobile Drawer) */}
       <Sidebar
         currentPage={currentPage}
         onNavigate={onNavigate}
@@ -36,12 +37,15 @@ export default function Layout({ currentPage, onNavigate, children }) {
         />
 
         {/* Dynamic Page Container with Aurora Background */}
-        <main className="flex-1 overflow-y-auto aurora-bg p-4 sm:p-6 lg:p-8">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <main className="flex-1 overflow-y-auto aurora-bg p-3.5 sm:p-6 lg:p-8 pb-24 sm:pb-8">
+          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {children}
           </div>
         </main>
       </div>
+
+      {/* Mobile Bottom Navigation (Phone Only) */}
+      <MobileBottomNav currentPage={currentPage} onNavigate={onNavigate} />
 
       {/* Global Quick Search Modal (Ctrl+K) */}
       <QuickSearchModal

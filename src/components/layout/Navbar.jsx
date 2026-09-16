@@ -5,24 +5,25 @@ import {
   Moon,
   Camera,
   Search,
-  Command,
-  Sparkles,
-  ShieldCheck,
-  Download,
-  Smartphone
+  Smartphone,
+  Clock,
+  PhoneCall
 } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
+import { useRoutineAlert } from '../../context/RoutineAlertContext';
 import { getStudentProfile, getTimetableImage } from '../../utils/storage';
+import { formatMinutesRemaining } from '../../utils/routineNotifier';
 
 export default function Navbar({ onToggleSidebar, onOpenSearch, onNavigate }) {
   const { isDark, toggleTheme } = useTheme();
+  const { nextUpcomingClass, triggerTestAlert } = useRoutineAlert();
   const profile = getStudentProfile();
   const hasTimetablePhoto = !!getTimetableImage();
 
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between h-16 px-4 sm:px-6 bg-white/75 dark:bg-slate-950/75 backdrop-blur-xl border-b border-slate-200/80 dark:border-slate-800/80 transition-colors">
       
-      {/* Left: Sidebar Toggle & App Title */}
+      {/* Left: Sidebar Toggle, App Title & Next Class Live Pill */}
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
@@ -43,6 +44,34 @@ export default function Navbar({ onToggleSidebar, onOpenSearch, onNavigate }) {
             </span>
           )}
         </div>
+
+        {/* Live Next Class Pill */}
+        {nextUpcomingClass && (
+          <button
+            type="button"
+            onClick={() => onNavigate('timetable')}
+            className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border transition-all hover:scale-102 active:scale-95 shadow-2xs ${
+              nextUpcomingClass.state === 'live'
+                ? 'bg-rose-500/10 text-rose-400 border-rose-500/30 ring-1 ring-rose-500/20'
+                : nextUpcomingClass.diffMinutes <= 15
+                ? 'bg-amber-500/10 text-amber-300 border-amber-500/30 animate-pulse'
+                : 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+            }`}
+            title="Click to view routine schedule"
+          >
+            {nextUpcomingClass.state === 'live' ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                <span>Live Now: {nextUpcomingClass.subjectName}</span>
+              </>
+            ) : (
+              <>
+                <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                <span>In {formatMinutesRemaining(nextUpcomingClass.diffMinutes)}: {nextUpcomingClass.subjectName}</span>
+              </>
+            )}
+          </button>
+        )}
       </div>
 
       {/* Middle: Quick Search Pill (Desktop) */}
@@ -50,7 +79,7 @@ export default function Navbar({ onToggleSidebar, onOpenSearch, onNavigate }) {
         <button
           type="button"
           onClick={onOpenSearch}
-          className="flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:border-indigo-500/40 transition-all text-xs font-medium w-56 group shadow-2xs"
+          className="flex items-center gap-3 px-3.5 py-1.5 rounded-xl bg-slate-100/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800/80 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:border-indigo-500/40 transition-all text-xs font-medium w-52 lg:w-56 group shadow-2xs"
         >
           <Search className="w-3.5 h-3.5 group-hover:text-indigo-500 transition-colors" />
           <span className="flex-1 text-left">Quick Search...</span>
@@ -70,6 +99,17 @@ export default function Navbar({ onToggleSidebar, onOpenSearch, onNavigate }) {
           title="Search"
         >
           <Search className="w-4 h-4" />
+        </button>
+
+        {/* Test Class Call Alert / Alarm Button */}
+        <button
+          type="button"
+          onClick={triggerTestAlert}
+          className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 text-xs font-bold transition-all hover:scale-102 active:scale-95 shadow-2xs"
+          title="Test 5-Minute Class Call Alarm with ringtone and speech"
+        >
+          <PhoneCall className="w-3.5 h-3.5 text-indigo-500" />
+          <span className="hidden lg:inline">Test Call Alert</span>
         </button>
 
         {/* Download App on Phone / Desktop Button */}

@@ -1,8 +1,11 @@
 import {
   LayoutDashboard,
-  Calendar,
   BookOpen,
   CalendarDays,
+  Clock,
+  Layers,
+  Bot,
+  FileText,
   Settings,
   Sparkles,
   X,
@@ -23,11 +26,14 @@ export default function Sidebar({
   const profile = getStudentProfile();
 
   const navItems = [
-    { id: 'dashboard', label: 'My Dashboard', icon: LayoutDashboard },
-    { id: 'timetable', label: 'Timetable & Routine', icon: Calendar, highlight: true },
-    { id: 'subjects', label: 'My Subjects', icon: BookOpen },
-    { id: 'calendar', label: 'Attendance Calendar', icon: CalendarDays },
-    { id: 'settings', label: 'Settings & Profile', icon: Settings }
+    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { id: 'subjects', label: 'Subjects', icon: BookOpen },
+    { id: 'attendance', label: 'Attendance', icon: CalendarDays },
+    { id: 'daily-routine', label: 'Daily Routine', icon: Clock },
+    { id: 'timetable', label: 'Timetable', icon: Layers },
+    { id: 'scan-timetable', label: 'Scan Timetable', icon: Bot, highlight: true },
+    { id: 'reports', label: 'Reports', icon: FileText },
+    { id: 'settings', label: 'Settings', icon: Settings }
   ];
 
   const sidebarContent = (

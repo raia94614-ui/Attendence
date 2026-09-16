@@ -22,8 +22,8 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
     code: '',
     teacher: '',
     target: 75,
-    present: 0,
-    total: 0,
+    present: '',
+    total: '',
     color: '#6366f1'
   });
 
@@ -36,8 +36,8 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
         code: subject.code || '',
         teacher: subject.teacher || '',
         target: subject.target || 75,
-        present: subject.present || 0,
-        total: subject.total || 0,
+        present: subject.present !== undefined && subject.present !== null ? String(subject.present) : '',
+        total: subject.total !== undefined && subject.total !== null ? String(subject.total) : '',
         color: subject.color || '#6366f1'
       });
     } else {
@@ -46,8 +46,8 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
         code: '',
         teacher: '',
         target: 75,
-        present: 0,
-        total: 0,
+        present: '',
+        total: '',
         color: COLOR_OPTIONS[Math.floor(Math.random() * COLOR_OPTIONS.length)].value
       });
     }
@@ -57,7 +57,9 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
   const validate = () => {
     const errs = {};
     if (!formData.name.trim()) errs.name = 'Subject name is required.';
-    if (parseInt(formData.present) > parseInt(formData.total)) {
+    const pres = formData.present === '' ? 0 : parseInt(formData.present, 10) || 0;
+    const tot = formData.total === '' ? 0 : parseInt(formData.total, 10) || 0;
+    if (pres > tot) {
       errs.present = 'Attended classes cannot exceed total classes.';
     }
     setErrors(errs);
@@ -68,12 +70,18 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
     e.preventDefault();
     if (!validate()) return;
 
+    const parsedData = {
+      ...formData,
+      present: formData.present === '' ? 0 : parseInt(formData.present, 10) || 0,
+      total: formData.total === '' ? 0 : parseInt(formData.total, 10) || 0
+    };
+
     if (isEdit) {
-      updateStudentSubject(subject.id, formData);
+      updateStudentSubject(subject.id, parsedData);
       toast.success(`Updated ${formData.name}`);
     } else {
       const code = formData.code.trim() || formData.name.substring(0, 3).toUpperCase();
-      addStudentSubject({ ...formData, code });
+      addStudentSubject({ ...parsedData, code });
       toast.success(`Added ${formData.name} to your subjects`);
     }
 
@@ -171,8 +179,9 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
               <input
                 type="number"
                 min="0"
+                placeholder="0"
                 value={formData.present}
-                onChange={(e) => setFormData({ ...formData, present: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setFormData({ ...formData, present: e.target.value })}
                 className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
               />
             </div>
@@ -184,8 +193,9 @@ export default function PersonalSubjectModal({ isOpen, onClose, subject = null, 
               <input
                 type="number"
                 min="0"
+                placeholder="0"
                 value={formData.total}
-                onChange={(e) => setFormData({ ...formData, total: parseInt(e.target.value) || 0 })}
+                onChange={(e) => setFormData({ ...formData, total: e.target.value })}
                 className="w-full px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none"
               />
             </div>

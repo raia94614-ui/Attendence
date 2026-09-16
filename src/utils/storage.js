@@ -17,6 +17,7 @@ const KEYS = {
   HOLIDAYS: 'attendx_v2_holidays',
   ASSIGNMENTS: 'attendx_v2_assignments',
   SETTINGS: 'attendx_v2_settings',
+  REMINDERS: 'attendx_v2_reminder_settings',
   THEME: 'attendx_theme'
 };
 
@@ -43,9 +44,11 @@ function safeSet(key, value) {
   }
 }
 
-// Initializer
+const ROUTINE_VERSION_KEY = 'attendx_v4_routine_version';
+const CURRENT_ROUTINE_VERSION = '2026.09.16.v4';
+
 export function initializeStorage() {
-  // Purge any legacy demo keys
+  // Purge any legacy keys
   const legacyKeys = [
     'attendx_student_profile',
     'attendx_student_subjects',
@@ -63,6 +66,21 @@ export function initializeStorage() {
     } catch (e) {}
   });
 
+  // Check if routine needs auto-repair / migration to 100% accurate BE-CSE-5A schedule
+  const storedVersion = localStorage.getItem(ROUTINE_VERSION_KEY);
+  const currentRoutine = safeGet(KEYS.WEEKLY_ROUTINE, null);
+  const mondayNeedsRepair = !currentRoutine || 
+    !currentRoutine.Monday || 
+    currentRoutine.Monday.length < 4 || 
+    currentRoutine.Monday.some(s => s.subjectCode === 'PA');
+
+  if (storedVersion !== CURRENT_ROUTINE_VERSION || mondayNeedsRepair) {
+    safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
+    safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
+    localStorage.setItem(ROUTINE_VERSION_KEY, CURRENT_ROUTINE_VERSION);
+  }
+
+  // Only initialize defaults if not already present
   if (!localStorage.getItem(KEYS.PROFILE)) {
     safeSet(KEYS.PROFILE, INITIAL_STUDENT_PROFILE);
   }
@@ -82,8 +100,24 @@ export function initializeStorage() {
     safeSet(KEYS.ASSIGNMENTS, INITIAL_ASSIGNMENTS);
   }
   if (!localStorage.getItem(KEYS.SETTINGS)) {
-    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "" });
+    safeSet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "Chitkara University, Himachal Pradesh" });
   }
+  if (!localStorage.getItem(KEYS.REMINDERS)) {
+    safeSet(KEYS.REMINDERS, DEFAULT_REMINDER_SETTINGS);
+  }
+}
+
+export function applyChitkaraWeeklySchedule() {
+  safeSet(KEYS.PROFILE, INITIAL_STUDENT_PROFILE);
+  safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
+  safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
+  localStorage.setItem(ROUTINE_VERSION_KEY, CURRENT_ROUTINE_VERSION);
+
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('attendx-routine-updated'));
+    window.dispatchEvent(new CustomEvent('attendx-attendance-updated'));
+  }
+  return { routine: INITIAL_WEEKLY_ROUTINE, subjects: INITIAL_STUDENT_SUBJECTS };
 }
 
 // ================= STUDENT PROFILE =================
@@ -197,8 +231,10 @@ export function removeTimetableImage() {
 // ================= WEEKLY ROUTINE =================
 export function getWeeklyRoutine() {
   const data = safeGet(KEYS.WEEKLY_ROUTINE, null);
-  if (!data) {
+  if (!data || !data.Monday || data.Monday.length < 4 || data.Monday.some(s => s.subjectCode === 'PA')) {
     safeSet(KEYS.WEEKLY_ROUTINE, INITIAL_WEEKLY_ROUTINE);
+    safeSet(KEYS.SUBJECTS, INITIAL_STUDENT_SUBJECTS);
+    localStorage.setItem(ROUTINE_VERSION_KEY, CURRENT_ROUTINE_VERSION);
     return INITIAL_WEEKLY_ROUTINE;
   }
   return data;
@@ -366,13 +402,30 @@ export function deleteAssignment(id) {
   return true;
 }
 
-// ================= SETTINGS & THEME =================
+// ================= SETTINGS, REMINDERS & THEME =================
+export const DEFAULT_REMINDER_SETTINGS = {
+  enabled: true,
+  leadTimeMinutes: 5, // 5 min before class
+  ringtoneEnabled: true,
+  soundType: 'marimba', // 'marimba' | 'chime' | 'buzzer'
+  speechEnabled: true,
+  browserNotificationEnabled: true
+};
+
 export function getSettings() {
   return safeGet(KEYS.SETTINGS, { minAttendanceTarget: 75, collegeName: "Apex Institute of Technology" });
 }
 
 export function saveSettings(settings) {
   return safeSet(KEYS.SETTINGS, settings);
+}
+
+export function getReminderSettings() {
+  return safeGet(KEYS.REMINDERS, DEFAULT_REMINDER_SETTINGS);
+}
+
+export function saveReminderSettings(settings) {
+  return safeSet(KEYS.REMINDERS, settings);
 }
 
 export function getTheme() {
@@ -396,7 +449,8 @@ export function exportDataAsJSON() {
     holidays: getHolidays(),
     assignments: getAssignments(),
     timetableImage: getTimetableImage(),
-    settings: getSettings()
+    settings: getSettings(),
+    reminders: getReminderSettings()
   };
   return JSON.stringify(backup, null, 2);
 }
@@ -415,6 +469,7 @@ export function importDataFromJSON(jsonString) {
     if (data.assignments) safeSet(KEYS.ASSIGNMENTS, data.assignments);
     if (data.timetableImage) localStorage.setItem(KEYS.TIMETABLE_IMAGE, data.timetableImage);
     if (data.settings) safeSet(KEYS.SETTINGS, data.settings);
+    if (data.reminders) safeSet(KEYS.REMINDERS, data.reminders);
     return { success: true, message: "Attendance & Routine data imported successfully!" };
   } catch (error) {
     return { success: false, message: error.message || "Failed to parse JSON backup file." };

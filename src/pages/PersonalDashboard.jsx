@@ -18,7 +18,8 @@ import {
   Sliders,
   Flame,
   Palmtree,
-  CheckSquare
+  CheckSquare,
+  Bot
 } from 'lucide-react';
 import TodayRoutineWidget from '../components/dashboard/TodayRoutineWidget';
 import PersonalSubjectModal from '../components/subjects/PersonalSubjectModal';
@@ -148,21 +149,29 @@ export default function PersonalDashboard({ onNavigate }) {
           </div>
 
           {/* Quick Top Tools */}
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 w-full sm:w-auto shrink-0">
+            <button
+              onClick={() => onNavigate('scan-timetable')}
+              className="inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-purple-600 hover:from-violet-500 hover:to-purple-500 text-white text-xs font-bold border border-indigo-400/30 transition-all hover:scale-102 active:scale-95 shadow-xl shadow-indigo-600/30"
+            >
+              <Bot className="w-4 h-4 text-indigo-200" />
+              <span>Scan AI</span>
+            </button>
+
             <button
               onClick={() => setIsSimulatorOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all hover:scale-102 active:scale-95 shadow-lg shadow-black/20"
+              className="inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all hover:scale-102 active:scale-95 shadow-lg shadow-black/20"
             >
               <Sliders className="w-4 h-4 text-indigo-300" />
-              <span>What-If Simulator</span>
+              <span>Simulator</span>
             </button>
 
             <button
               onClick={() => setIsSlipOpen(true)}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all hover:scale-102 active:scale-95 shadow-lg shadow-black/20"
+              className="inline-flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold backdrop-blur-md transition-all hover:scale-102 active:scale-95 shadow-lg shadow-black/20"
             >
               <Printer className="w-4 h-4 text-emerald-300" />
-              <span>Official Slip</span>
+              <span>Slip</span>
             </button>
 
             <button
@@ -170,10 +179,10 @@ export default function PersonalDashboard({ onNavigate }) {
                 setSubjectToEdit(null);
                 setIsAddSubjectOpen(true);
               }}
-              className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white text-xs font-bold shadow-xl shadow-indigo-600/30 transition-all hover:scale-102 active:scale-95"
+              className="col-span-2 sm:col-span-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition-all hover:scale-102 active:scale-95"
             >
               <Plus className="w-4 h-4" />
-              <span>Add Subject</span>
+              <span>+ Subject</span>
             </button>
           </div>
         </div>
@@ -294,12 +303,21 @@ export default function PersonalDashboard({ onNavigate }) {
               </div>
             </div>
 
-            <button
-              onClick={() => onNavigate('timetable')}
-              className="px-3.5 py-1.5 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 text-xs font-bold border border-indigo-500/20 transition-all hover:scale-102"
-            >
-              {timetableImg ? 'Open & Zoom' : '+ Upload Pic'}
-            </button>
+            <div className="flex items-center gap-1.5">
+              <button
+                onClick={() => onNavigate('scan-timetable')}
+                className="px-3 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all hover:scale-102 flex items-center gap-1"
+              >
+                <Bot className="w-3.5 h-3.5" />
+                <span>Scan AI</span>
+              </button>
+              <button
+                onClick={() => onNavigate('timetable')}
+                className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold border border-slate-700 transition-all hover:scale-102"
+              >
+                {timetableImg ? 'Open & Zoom' : '+ Upload'}
+              </button>
+            </div>
           </div>
 
           {timetableImg ? (

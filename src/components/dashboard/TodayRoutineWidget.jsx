@@ -5,17 +5,14 @@ import {
   X,
   Clock,
   MapPin,
-  Sparkles,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  RotateCcw,
-  ArrowRight,
-  Sun,
-  Palmtree
+  Palmtree,
+  PhoneCall,
+  User
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { useToast } from '../../context/ToastContext';
+import { useRoutineAlert } from '../../context/RoutineAlertContext';
 import {
   getWeeklyRoutine,
   getStudentSubjects,
@@ -24,11 +21,18 @@ import {
   isDateHoliday
 } from '../../utils/storage';
 import { getTodayDateString, formatDate } from '../../utils/dateUtils';
+import { parseTimeToMinutes, getCurrentTimeMinutes, formatMinutesRemaining } from '../../utils/routineNotifier';
 
 const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
   const toast = useToast();
+  const {
+    nextUpcomingClass,
+    triggerAlert,
+    triggerTestAlert,
+    reminderSettings
+  } = useRoutineAlert();
 
   const [viewMode, setViewMode] = useState('today'); // 'today' | 'tomorrow'
 
@@ -57,6 +61,15 @@ export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
 
   useEffect(() => {
     loadData();
+
+    const handleExternalUpdate = () => {
+      loadData();
+    };
+
+    window.addEventListener('attendx-attendance-updated', handleExternalUpdate);
+    return () => {
+      window.removeEventListener('attendx-attendance-updated', handleExternalUpdate);
+    };
   }, []);
 
   const activeSlots = routine[activeDayName] || [];
@@ -191,6 +204,45 @@ export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
         </div>
       )}
 
+      {/* Next Class Call Alarm Spotlight (Today Only) */}
+      {viewMode === 'today' && nextUpcomingClass && !holidayInfo && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950/80 border border-indigo-500/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-2xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center text-indigo-400 font-bold shrink-0 shadow-inner">
+              <PhoneCall className="w-5 h-5 animate-pulse text-indigo-400" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                  {nextUpcomingClass.state === 'live' ? '🔴 Ongoing Lecture' : '⏰ Next Class Up'}
+                </span>
+                <span className="text-sm font-bold text-white">
+                  {nextUpcomingClass.subjectName}
+                </span>
+              </div>
+              <p className="text-xs text-indigo-200/80 mt-0.5">
+                {nextUpcomingClass.state === 'live' 
+                  ? `Live in progress (${nextUpcomingClass.time}) • 1-tap attend below`
+                  : `Starts in ${formatMinutesRemaining(nextUpcomingClass.diffMinutes)} • ${nextUpcomingClass.time} ${nextUpcomingClass.teacher ? `• 👤 ${nextUpcomingClass.teacher}` : ''} ${nextUpcomingClass.room ? `• 📍 ${nextUpcomingClass.room}` : ''}`
+                }
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+            <button
+              type="button"
+              onClick={() => triggerAlert(nextUpcomingClass, nextUpcomingClass.diffMinutes || 0, false)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all hover:scale-102 active:scale-95"
+              title="Open incoming call alarm screen for this lecture"
+            >
+              <PhoneCall className="w-3.5 h-3.5" />
+              <span>Call Alarm Screen</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Slots List */}
       {!holidayInfo && activeSlots.length === 0 ? (
         <div className="py-10 text-center text-slate-400">
@@ -207,11 +259,13 @@ export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
           {activeSlots.map((slot) => {
             const sub = subjects.find(s => s.id === slot.subjectId) || {
               name: slot.subjectName,
-              code: 'SUB',
+              code: slot.subjectCode || 'SUB',
               color: '#6366f1'
             };
             const currentStatus = getSlotStatus(slot);
             const isLive = isClassLiveNow(slot.time);
+            const teacherName = slot.teacher || sub.teacher;
+            const roomName = slot.room || sub.room;
 
             return (
               <div
@@ -237,10 +291,10 @@ export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-mono text-xs font-bold text-indigo-400 bg-slate-800 px-2 py-0.5 rounded-md border border-slate-700 shadow-2xs">
-                        {sub.code || 'SUB'}
+                        {slot.subjectCode || sub.code || 'SUB'}
                       </span>
                       <h4 className="text-sm font-bold text-white">
-                        {sub.name}
+                        {slot.subjectName || sub.name}
                       </h4>
                       {isLive && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-red-500 text-white shadow-xs animate-live">
@@ -253,9 +307,14 @@ export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
                       <span className="flex items-center gap-1 font-semibold text-slate-300 font-mono">
                         <Clock className="w-3.5 h-3.5 text-indigo-400" /> {slot.time}
                       </span>
-                      {slot.room && (
-                        <span className="flex items-center gap-1 font-medium">
-                          <MapPin className="w-3.5 h-3.5 text-slate-500" /> {slot.room}
+                      {teacherName && (
+                        <span className="flex items-center gap-1 font-medium text-slate-300 bg-indigo-950/60 px-2 py-0.5 rounded-md border border-indigo-800/50">
+                          <User className="w-3.5 h-3.5 text-indigo-400" /> {teacherName}
+                        </span>
+                      )}
+                      {roomName && (
+                        <span className="flex items-center gap-1 font-medium text-slate-400">
+                          <MapPin className="w-3.5 h-3.5 text-slate-500" /> {roomName}
                         </span>
                       )}
                     </div>
@@ -264,6 +323,15 @@ export default function TodayRoutineWidget({ onNavigate, onAttendanceUpdate }) {
 
                 {/* 1-Tap Attendance Marking Buttons */}
                 <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => triggerAlert(slot, 0, false)}
+                    className="p-2 rounded-xl text-slate-400 hover:text-indigo-400 hover:bg-indigo-950/40 border border-slate-700/80 transition-all hover:scale-105 active:scale-95"
+                    title="Ring Call Alarm for this period"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5" />
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => handleMarkStatus(slot, 'present')}

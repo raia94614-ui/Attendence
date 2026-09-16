@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import {
   Settings,
-  User,
   Save,
   ShieldCheck,
-  Building,
   GraduationCap,
   Trash2,
-  AlertTriangle,
   RotateCcw,
   Smartphone,
   Download,
-  Sparkles
+  Sparkles,
+  Bell,
+  PhoneCall,
+  Volume2,
+  Mic,
+  Clock
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useRoutineAlert } from '../context/RoutineAlertContext';
+import { playClassRingtone, stopClassRingtone } from '../utils/routineAlarmAudio';
 import ConfirmDialog from '../components/common/ConfirmDialog';
 import {
   getStudentProfile,
@@ -25,10 +29,32 @@ import {
 
 export default function SettingsPage() {
   const toast = useToast();
+  const {
+    reminderSettings,
+    updateSettings,
+    triggerTestAlert,
+    notificationPermission,
+    requestBrowserPermission
+  } = useRoutineAlert();
 
   const [profile, setProfile] = useState(getStudentProfile());
   const [settings, setSettings] = useState(getSettings());
   const [isClearDialogOpen, setIsClearDialogOpen] = useState(false);
+  const [isPlayingSoundPreview, setIsPlayingSoundPreview] = useState(false);
+
+  const toggleSoundPreview = (soundType) => {
+    if (isPlayingSoundPreview) {
+      stopClassRingtone();
+      setIsPlayingSoundPreview(false);
+    } else {
+      playClassRingtone(soundType || reminderSettings.soundType || 'marimba');
+      setIsPlayingSoundPreview(true);
+      setTimeout(() => {
+        stopClassRingtone();
+        setIsPlayingSoundPreview(false);
+      }, 5000);
+    }
+  };
 
   const loadData = () => {
     setProfile(getStudentProfile());
@@ -202,6 +228,183 @@ export default function SettingsPage() {
             </button>
           </div>
         </form>
+      </div>
+
+      {/* Timetable Class Call Alarms & Notification Settings Card */}
+      <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-5">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="flex items-center gap-2">
+            <PhoneCall className="w-5 h-5 text-indigo-500" />
+            <div>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">
+                Timetable Class Call Alarms & Notifications
+              </h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Get an incoming phone-call style alarm & browser notification before every lecture
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={triggerTestAlert}
+            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all hover:scale-102 active:scale-95"
+            title="Preview the incoming call screen, sound, and voice alert"
+          >
+            <PhoneCall className="w-3.5 h-3.5" />
+            <span>🧪 Test Call Alarm</span>
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          
+          {/* Master Toggle */}
+          <div className="flex items-center justify-between p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+            <div className="space-y-0.5">
+              <label className="text-xs font-bold text-slate-900 dark:text-white cursor-pointer" htmlFor="enable-call-alarms">
+                Enable 5-Min Class Call Alarms
+              </label>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                Automatically ring incoming call modal when class is approaching
+              </p>
+            </div>
+            <input
+              id="enable-call-alarms"
+              type="checkbox"
+              checked={reminderSettings.enabled}
+              onChange={(e) => updateSettings({ enabled: e.target.checked })}
+              className="w-5 h-5 rounded-md accent-indigo-600 cursor-pointer"
+            />
+          </div>
+
+          {/* Lead Time Selector */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+              <Clock className="w-3.5 h-3.5 text-indigo-500" />
+              <span>Remind Me (Notice Time Before Class)</span>
+            </label>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: '5 Minutes Before (Default)', value: 5 },
+                { label: '10 Minutes Before', value: 10 },
+                { label: '15 Minutes Before', value: 15 },
+                { label: 'At Class Start (0 min)', value: 0 }
+              ].map(opt => (
+                <button
+                  type="button"
+                  key={opt.value}
+                  onClick={() => updateSettings({ leadTimeMinutes: opt.value })}
+                  className={`px-3 py-2.5 rounded-xl text-xs font-bold border transition-all text-center ${
+                    parseInt(reminderSettings.leadTimeMinutes, 10) === opt.value
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-md shadow-indigo-600/20'
+                      : 'bg-slate-50 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-indigo-500/40'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Ringtone Sound Selector & Preview */}
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+                <Volume2 className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Call Ringtone Alarm Sound</span>
+              </label>
+              <button
+                type="button"
+                onClick={() => toggleSoundPreview()}
+                className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
+              >
+                <span>{isPlayingSoundPreview ? '⏹ Stop Sound Preview' : '▶ Play Sample Ringtone'}</span>
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-3 gap-2">
+              {[
+                { id: 'marimba', name: 'Smartphone Marimba', desc: 'Melodic ringtone' },
+                { id: 'chime', name: 'Modern Chime', desc: 'Soft double bell' },
+                { id: 'buzzer', name: 'Urgent Buzzer', desc: 'Alert beep' }
+              ].map(s => (
+                <button
+                  type="button"
+                  key={s.id}
+                  onClick={() => {
+                    updateSettings({ soundType: s.id });
+                    playClassRingtone(s.id);
+                    setIsPlayingSoundPreview(true);
+                    setTimeout(() => {
+                      stopClassRingtone();
+                      setIsPlayingSoundPreview(false);
+                    }, 3000);
+                  }}
+                  className={`p-3 rounded-2xl border text-left transition-all ${
+                    reminderSettings.soundType === s.id
+                      ? 'bg-indigo-50 dark:bg-indigo-950/60 border-indigo-500 text-indigo-950 dark:text-white shadow-xs'
+                      : 'bg-slate-50 dark:bg-slate-800/60 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-indigo-500/40'
+                  }`}
+                >
+                  <p className="text-xs font-bold">{s.name}</p>
+                  <p className="text-[10px] text-slate-400">{s.desc}</p>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Voice Speech & Native Notification Toggles */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            
+            {/* Voice Announcement */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+              <div className="flex items-center gap-2.5">
+                <Mic className="w-4 h-4 text-purple-500" />
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">Voice Announcement</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">Speak lecture name & room verbally</p>
+                </div>
+              </div>
+              <input
+                type="checkbox"
+                checked={reminderSettings.speechEnabled}
+                onChange={(e) => updateSettings({ speechEnabled: e.target.checked })}
+                className="w-4 h-4 rounded accent-indigo-600 cursor-pointer"
+              />
+            </div>
+
+            {/* Browser Push Notification */}
+            <div className="flex items-center justify-between p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+              <div className="flex items-center gap-2.5">
+                <Bell className="w-4 h-4 text-emerald-500" />
+                <div>
+                  <p className="text-xs font-bold text-slate-900 dark:text-white">Browser Push Notification</p>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                    {notificationPermission === 'granted' ? '● Permission Granted' : '○ Permission Needed'}
+                  </p>
+                </div>
+              </div>
+              {notificationPermission !== 'granted' ? (
+                <button
+                  type="button"
+                  onClick={requestBrowserPermission}
+                  className="px-2.5 py-1 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-[10px] shadow-xs transition-all"
+                >
+                  Enable
+                </button>
+              ) : (
+                <input
+                  type="checkbox"
+                  checked={reminderSettings.browserNotificationEnabled}
+                  onChange={(e) => updateSettings({ browserNotificationEnabled: e.target.checked })}
+                  className="w-4 h-4 rounded accent-indigo-600 cursor-pointer"
+                />
+              )}
+            </div>
+
+          </div>
+
+        </div>
       </div>
 
       {/* Danger Zone: Clean Slate */}

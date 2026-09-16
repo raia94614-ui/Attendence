@@ -20,7 +20,8 @@ import {
   getStudentSubjects,
   deleteStudentSubject,
   adjustSubjectAttendance,
-  getSettings
+  getSettings,
+  applyChitkaraWeeklySchedule
 } from '../utils/storage';
 import { calculateOverallStudentMetrics } from '../utils/calculations';
 
@@ -83,34 +84,60 @@ export default function PersonalSubjectsPage() {
           </p>
         </div>
 
-        <button
-          onClick={() => {
-            setSubjectToEdit(null);
-            setIsModalOpen(true);
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all hover:scale-102 shrink-0"
-        >
-          <Plus className="w-4 h-4" />
-          Add New Subject
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              applyChitkaraWeeklySchedule();
+              loadData();
+              toast.success('✨ Synced BE-CSE-5A course subjects! 🎉');
+            }}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold transition-all hover:scale-102 shrink-0"
+          >
+            <Sparkles className="w-4 h-4" />
+            <span>Sync BE-CSE-5A</span>
+          </button>
+
+          <button
+            onClick={() => {
+              setSubjectToEdit(null);
+              setIsModalOpen(true);
+            }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/30 transition-all hover:scale-102 shrink-0"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Add New Subject</span>
+          </button>
+        </div>
       </div>
 
       {/* Subjects Cards List */}
       {subjects.length === 0 ? (
-        <div className="p-12 text-center text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800">
-          <BookOpen className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-700 mb-3" />
+        <div className="p-12 text-center text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 space-y-3">
+          <BookOpen className="w-12 h-12 mx-auto text-slate-300 dark:text-slate-700" />
           <h3 className="text-base font-bold text-slate-900 dark:text-white">
             No Subjects Added Yet
           </h3>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-1 mb-5">
-            Add your college course subjects to start tracking your daily attendance and safe bunks.
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto mb-2">
+            Add your college course subjects or sync the complete Chitkara BE-CSE-5A syllabus subjects.
           </p>
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-600/30"
-          >
-            <Plus className="w-4 h-4" /> Add Your First Subject
-          </button>
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <button
+              onClick={() => {
+                applyChitkaraWeeklySchedule();
+                loadData();
+                toast.success('✨ Synced BE-CSE-5A subjects! 🎉');
+              }}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black shadow-lg shadow-amber-500/20"
+            >
+              <Sparkles className="w-4 h-4" /> Sync BE-CSE-5A Subjects
+            </button>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-lg shadow-indigo-600/30"
+            >
+              <Plus className="w-4 h-4" /> Add Custom Subject
+            </button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
